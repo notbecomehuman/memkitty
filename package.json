@@ -1,6 +1,6 @@
 {
   "name": "memkitty",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Native Windows process memory toolkit for Node.js",
   "author": "notbecomehuman",
   "license": "MIT",
