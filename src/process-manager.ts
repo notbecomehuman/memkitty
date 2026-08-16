@@ -112,4 +112,30 @@ export class ProcessManager {
             length
         );
     }
+
+    allocateMemory(size: number): Address {
+        return this.nativeProcess.allocateMemory(
+            size
+        );
+    }
+
+    inject(
+        address: Address,
+        data: Buffer
+    ): boolean {
+        return this.nativeProcess.inject(
+            address,
+            data
+        );
+    }
+
+    injectAndExecute(
+        address: Address,
+        data: Buffer
+    ): boolean {
+        return this.nativeProcess.injectAndExecute(
+            address,
+            data
+        );
+    }
 }
