@@ -1,0 +1,47 @@
+{
+  "name": "memkitty",
+  "version": "1.0.0",
+  "description": "Native Windows process memory toolkit for Node.js",
+  "author": "notbecomehuman",
+  "license": "MIT",
+
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+
+  "os": [
+    "win32"
+  ],
+
+  "files": [
+    "dist",
+    "native",
+    "binding.gyp"
+  ],
+
+  "scripts": {
+    "clean": "node-gyp clean",
+    "build:native": "node-gyp rebuild",
+    "build:ts": "tsc",
+    "build": "npm run build:native && npm run build:ts",
+    "prepublishOnly": "npm run build"
+  },
+
+  "dependencies": {
+    "node-addon-api": "^8.0.0"
+  },
+
+  "devDependencies": {
+    "@types/node": "^24.0.0",
+    "node-gyp": "^11.0.0",
+    "typescript": "^5.0.0"
+  },
+
+  "keywords": [
+    "memory",
+    "process",
+    "winapi",
+    "native",
+    "addon",
+    "node-addon-api"
+  ]
+}
