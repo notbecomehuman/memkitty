@@ -4,15 +4,34 @@
         "module": "CommonJS",
         "moduleResolution": "Node",
 
-        "rootDir": "./src",
-        "outDir": "./dist",
+        "rootDir": "src",
+        "outDir": "dist",
+
+        "declaration": true,
+        "declarationMap": true,
 
         "strict": true,
+
         "esModuleInterop": true,
-        "skipLibCheck": true
+        "allowSyntheticDefaultImports": true,
+
+        "skipLibCheck": true,
+
+        "forceConsistentCasingInFileNames": true,
+
+        "sourceMap": true,
+
+        "types": [
+            "node"
+        ]
     },
 
     "include": [
         "src/**/*.ts"
+    ],
+
+    "exclude": [
+        "node_modules",
+        "dist"
     ]
 }
