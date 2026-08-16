@@ -10,6 +10,26 @@
 ```bash
 npm install memkitty
 ```
+During installation the native addon will be compiled using `node-gyp`.
+
+Make sure Visual Studio C++ Build Tools are installed.
+
+## Requirements
+
+### Build Tools
+
+This package contains a native Node.js addon and requires
+Visual Studio C++ Build Tools to compile.
+
+Install:
+
+- Visual Studio 2022
+- Desktop development with C++
+
+or
+
+- Build Tools for Visual Studio 2022
+- Desktop development with C++
 
 ## Example
 
