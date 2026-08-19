@@ -45,6 +45,14 @@ export class ProcessManager {
         );
     }
 
+    static getHwndByPid(
+        pid: number
+    ): bigint {
+        return addon.getHwndByPid(
+            pid
+        );
+    }
+
     open(): boolean {
         return this.nativeProcess.open();
     }

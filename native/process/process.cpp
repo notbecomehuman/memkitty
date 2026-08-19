@@ -198,7 +198,29 @@ std::vector<DWORD> Process::GetPidsByName(
     return pids;
 }
 
-BOOL CALLBACK Process::EnumWindowsForPids(HWND hwnd, LPARAM lParam)
+BOOL CALLBACK Process::EnumWindowsForPid(HWND hwnd, LPARAM lParam)
+{
+    auto* data = reinterpret_cast<FindWindowData*>(lParam);
+
+    DWORD windowPid = 0;
+
+    GetWindowThreadProcessId(
+        hwnd,
+        &windowPid
+    );
+
+    if (windowPid != data->pid)
+        return TRUE;
+
+    if (!IsWindowVisible(hwnd))
+        return TRUE;
+
+    data->hwnd = hwnd;
+
+    return FALSE;
+}
+
+BOOL CALLBACK Process::EnumWindowsForTitle(HWND hwnd, LPARAM lParam)
 {
     auto* data = reinterpret_cast<FindPidsData*>(lParam);
 
@@ -242,7 +264,7 @@ std::vector<DWORD> Process::GetPidsByTitle(const std::wstring& windowTitle)
     data.title = windowTitle;
 
     EnumWindows(
-        EnumWindowsForPids,
+        EnumWindowsForTitle,
         reinterpret_cast<LPARAM>(&data)
     );
 
@@ -250,4 +272,19 @@ std::vector<DWORD> Process::GetPidsByTitle(const std::wstring& windowTitle)
         data.pids.begin(),
         data.pids.end()
     );
+}
+
+HWND Process::GetHwndByPid(DWORD pid)
+{
+    FindWindowData data{
+        .pid = pid,
+        .hwnd = nullptr
+    };
+
+    EnumWindows(
+        EnumWindowsForPid,
+        reinterpret_cast<LPARAM>(&data)
+    );
+
+    return data.hwnd;
 }

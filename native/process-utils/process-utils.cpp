@@ -126,6 +126,35 @@ Napi::Value GetPidsByTitle(const Napi::CallbackInfo& info)
     return result;
 }
 
+Napi::Value GetHwndByPid(
+    const Napi::CallbackInfo& info
+)
+{
+    Napi::Env env = info.Env();
+
+    if (info.Length() < 1 || !info[0].IsNumber())
+    {
+        Napi::TypeError::New(
+            env,
+            "pid must be a number"
+        ).ThrowAsJavaScriptException();
+
+        return env.Null();
+    }
+
+    DWORD pid =
+        info[0].As<Napi::Number>()
+            .Uint32Value();
+
+    HWND hwnd =
+        Process::GetHwndByPid(pid);
+
+    return Napi::BigInt::New(
+        env,
+        reinterpret_cast<uint64_t>(hwnd)
+    );
+}
+
 void RegisterProcessUtils(
     Napi::Env env,
     Napi::Object exports
@@ -143,6 +172,13 @@ void RegisterProcessUtils(
         Napi::Function::New(
             env,
             GetPidsByTitle
+        )
+    );
+    exports.Set(
+        "getHwndByPid",
+        Napi::Function::New(
+            env,
+            GetHwndByPid
         )
     );
 }

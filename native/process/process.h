@@ -14,6 +14,12 @@ struct FindPidsData
     std::unordered_set<DWORD> pids;
 };
 
+struct FindWindowData
+{
+    DWORD pid;
+    HWND hwnd;
+};
+
 class Process
 {
 public:
@@ -40,14 +46,15 @@ public:
     static std::vector<DWORD> GetPidsByTitle(
         const std::wstring& windowTitle
     );
-    /* static std::vector<DWORD> GetHwndByPid(
-        const std::wstring& windowTitle
+    static HWND GetHwndByPid(DWORD pid);
+    static bool PostMessage(
+        HWND hwnd,
+        UINT message,
+        WPARAM wParam = 0,
+        LPARAM lParam = 0
     );
-    std::vector<DWORD> PostMessage(
-        const std::wstring& windowTitle
-    ); */
-
-    static BOOL CALLBACK EnumWindowsForPids(HWND hwnd, LPARAM lParam);
+    static BOOL CALLBACK EnumWindowsForPid(HWND hwnd, LPARAM lParam);
+    static BOOL CALLBACK EnumWindowsForTitle(HWND hwnd, LPARAM lParam);
 
     ProcessArchitecture GetArchitecture() const;
 private:
