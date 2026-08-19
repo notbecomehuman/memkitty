@@ -5,6 +5,14 @@
 #include <cstdint>
 #include <vector>
 #include <string>
+#include <unordered_set>
+
+
+struct FindPidsData
+{
+    std::wstring title;
+    std::unordered_set<DWORD> pids;
+};
 
 class Process
 {
@@ -29,6 +37,17 @@ public:
     static std::vector<DWORD> GetPidsByName(
         const std::wstring& processName
     );
+    static std::vector<DWORD> GetPidsByTitle(
+        const std::wstring& windowTitle
+    );
+    /* static std::vector<DWORD> GetHwndByPid(
+        const std::wstring& windowTitle
+    );
+    std::vector<DWORD> PostMessage(
+        const std::wstring& windowTitle
+    ); */
+
+    static BOOL CALLBACK EnumWindowsForPids(HWND hwnd, LPARAM lParam);
 
     ProcessArchitecture GetArchitecture() const;
 private:

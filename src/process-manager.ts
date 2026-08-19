@@ -37,6 +37,14 @@ export class ProcessManager {
         );
     }
 
+    static getPidsByTitle(
+        windowTitle: string
+    ): number[] {
+        return addon.getPidsByTitle(
+            windowTitle
+        );
+    }
+
     open(): boolean {
         return this.nativeProcess.open();
     }
