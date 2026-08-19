@@ -18,6 +18,8 @@
 - Remote memory allocation
 - Memory injection
 - Inject and execute shellcode
+- Retrieve HWND by PID
+- Send messages to a window using PostMessage
 
 ---
 
@@ -162,8 +164,90 @@ Example:
 ```ts
 const pids =
     ProcessManager.getPidsByName(
-        'elementclient.exe'
+        'notepad.exe'
     );
+```
+
+### getPidsByTitle
+
+Finds running processes by window title.
+
+```ts
+ProcessManager.getPidsByTitle(
+    windowTitle: string
+): number[]
+```
+
+Example:
+
+```ts
+const pids =
+    ProcessManager.getPidsByTitle(
+        'Notepad'
+    );
+```
+
+### getHwndByPid
+
+Returns the window handle (`HWND`) associated with the specified process ID.
+
+```ts
+ProcessManager.getHwndByPid(
+    pid: number
+): bigint
+```
+
+Example:
+
+```ts
+const pids = ProcessManager.getPidsByTitle('Notepad');
+const hwnd = ProcessManager.getHwndByPid(pids[0]);
+```
+
+### postMessage
+
+Finds running processes by executable name.
+
+```ts
+ProcessManager.postMessage(
+    hwnd: bigint,
+    message: number,
+    wParam?: number,
+    lParam?: number,
+): boolean
+```
+
+Example:
+
+```ts
+const pids = ProcessManager.getPidsByTitle('Notepad');
+const hwnd = ProcessManager.getHwndByPid(pids[0]);
+
+//send Escape to window
+ProcessManager.postMessage(hwnd, 0x0100, 0x1B, 0);
+ProcessManager.postMessage(hwnd, 0x0101, 0x1B, 0);
+```
+
+### makeLParam
+
+Creates an LPARAM value
+
+```ts
+ProcessManager.makeLParam(
+    x: number, 
+    y: number
+): number
+```
+
+Example:
+
+```ts
+const pids = ProcessManager.getPidsByTitle('Notepad');
+const hwnd = ProcessManager.getHwndByPid(pids[0]);
+
+//click to x=100, y=200 coordinates in the window
+ProcessManager.postMessage(hwnd, 0x0201, 0, ProcessManager.makeLParam(100, 200)); 
+ProcessManager.postMessage(hwnd, 0x0202, 0, ProcessManager.makeLParam(100, 200));
 ```
 
 ---
@@ -340,25 +424,29 @@ Writes bytes and executes the supplied code in the target process.
 
 ## API Summary
 
-| Method | Returns |
-|----------|----------|
-| `getPidsByName()` | `number[]` |
-| `open()` | `boolean` |
-| `close()` | `void` |
-| `isOpen()` | `boolean` |
+| Method | Returns               |
+|----------|-----------------------|
+| `getPidsByName()` | `number[]`            |
+| `getPidsByTitle()` | `number[]`            |
+| `getHwndByPid()` | `bigint`              |
+| `postMessage()` | `boolean`             |
+| `makeLParam()` | `number`              |
+| `open()` | `boolean`             |
+| `close()` | `void`                |
+| `isOpen()` | `boolean`             |
 | `getArchitecture()` | `ProcessArchitecture` |
-| `getBaseAddress()` | `Address` |
-| `readInt32()` | `number` |
-| `readUInt32()` | `number` |
-| `readInt64()` | `bigint` |
-| `readUInt64()` | `bigint` |
-| `readFloat()` | `number` |
-| `readPointer()` | `Address` |
-| `readBytes()` | `Buffer` |
-| `readWString()` | `string` |
-| `allocateMemory()` | `Address` |
-| `inject()` | `boolean` |
-| `injectAndExecute()` | `boolean` |
+| `getBaseAddress()` | `Address`             |
+| `readInt32()` | `number`              |
+| `readUInt32()` | `number`              |
+| `readInt64()` | `bigint`              |
+| `readUInt64()` | `bigint`              |
+| `readFloat()` | `number`              |
+| `readPointer()` | `Address`             |
+| `readBytes()` | `Buffer`              |
+| `readWString()` | `string`              |
+| `allocateMemory()` | `Address`             |
+| `inject()` | `boolean`             |
+| `injectAndExecute()` | `boolean`             |
 
 ---
 
