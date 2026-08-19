@@ -30,3 +30,6 @@ coverage/
 
 # npm pack
 *.tgz
+
+#tests
+tests/
