@@ -33,7 +33,7 @@ static std::wstring Utf8ToWide(const std::string& str)
     return result;
 }
 
-Napi::Value GetPidsByName(
+Napi::Value GetPidsByNameBinding(
     const Napi::CallbackInfo& info
 )
 {
@@ -89,7 +89,7 @@ Napi::Value GetPidsByName(
     return result;
 }
 
-Napi::Value GetPidsByTitle(const Napi::CallbackInfo& info)
+Napi::Value GetPidsByTitleBinding(const Napi::CallbackInfo& info)
 {
     Napi::Env env = info.Env();
 
@@ -126,7 +126,7 @@ Napi::Value GetPidsByTitle(const Napi::CallbackInfo& info)
     return result;
 }
 
-Napi::Value GetHwndByPid(
+Napi::Value GetHwndByPidBinding(
     const Napi::CallbackInfo& info
 )
 {
@@ -155,6 +155,71 @@ Napi::Value GetHwndByPid(
     );
 }
 
+Napi::Value PostMessageBinding(
+    const Napi::CallbackInfo& info
+)
+{
+    Napi::Env env = info.Env();
+
+    if (info.Length() < 2)
+    {
+        Napi::TypeError::New(
+            env,
+            "Expected hwnd and message"
+        ).ThrowAsJavaScriptException();
+
+        return env.Null();
+    }
+
+    bool lossless = false;
+
+    uint64_t hwndValue =
+        info[0]
+            .As<Napi::BigInt>()
+            .Uint64Value(&lossless);
+
+    UINT message =
+        info[1]
+            .As<Napi::Number>()
+            .Uint32Value();
+
+    WPARAM wParam = 0;
+    LPARAM lParam = 0;
+
+    if (info.Length() >= 3)
+    {
+        wParam =
+            static_cast<WPARAM>(
+                info[2]
+                    .As<Napi::Number>()
+                    .Int64Value()
+            );
+    }
+
+    if (info.Length() >= 4)
+    {
+        lParam =
+            static_cast<LPARAM>(
+                info[3]
+                    .As<Napi::Number>()
+                    .Int64Value()
+            );
+    }
+
+    bool result =
+        Process::PostMessage(
+            reinterpret_cast<HWND>(hwndValue),
+            message,
+            wParam,
+            lParam
+        );
+
+    return Napi::Boolean::New(
+        env,
+        result
+    );
+}
+
 void RegisterProcessUtils(
     Napi::Env env,
     Napi::Object exports
@@ -164,21 +229,28 @@ void RegisterProcessUtils(
         "getPidsByName",
         Napi::Function::New(
             env,
-            GetPidsByName
+            GetPidsByNameBinding
         )
     );
     exports.Set(
         "getPidsByTitle",
         Napi::Function::New(
             env,
-            GetPidsByTitle
+            GetPidsByTitleBinding
         )
     );
     exports.Set(
         "getHwndByPid",
         Napi::Function::New(
             env,
-            GetHwndByPid
+            GetHwndByPidBinding
+        )
+    );
+    exports.Set(
+        "postMessage",
+        Napi::Function::New(
+            env,
+            PostMessageBinding
         )
     );
 }

@@ -288,3 +288,21 @@ HWND Process::GetHwndByPid(DWORD pid)
 
     return data.hwnd;
 }
+
+bool Process::PostMessage(
+    HWND hwnd,
+    UINT message,
+    WPARAM wParam,
+    LPARAM lParam
+)
+{
+    if (!IsWindow(hwnd))
+        return false;
+
+    return ::PostMessageW(
+        hwnd,
+        message,
+        wParam,
+        lParam
+    ) != FALSE;
+}
