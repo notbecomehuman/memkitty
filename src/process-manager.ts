@@ -37,6 +37,35 @@ export class ProcessManager {
         );
     }
 
+    static getPidsByTitle(
+        windowTitle: string
+    ): number[] {
+        return addon.getPidsByTitle(
+            windowTitle
+        );
+    }
+
+    static getHwndByPid(
+        pid: number
+    ): bigint {
+        return addon.getHwndByPid(
+            pid
+        );
+    }
+
+    static postMessage(
+        hwnd: bigint,
+        message: number,
+        wParam?: number,
+        lParam?: number,
+    ): boolean {
+        return addon.postMessage(hwnd, message, wParam, lParam);
+    }
+
+    static makeLParam(x: number, y: number): number {
+        return ((y & 0xffff) << 16) | (x & 0xffff);
+    }
+
     open(): boolean {
         return this.nativeProcess.open();
     }

@@ -197,3 +197,112 @@ std::vector<DWORD> Process::GetPidsByName(
 
     return pids;
 }
+
+BOOL CALLBACK Process::EnumWindowsForPid(HWND hwnd, LPARAM lParam)
+{
+    auto* data = reinterpret_cast<FindWindowData*>(lParam);
+
+    DWORD windowPid = 0;
+
+    GetWindowThreadProcessId(
+        hwnd,
+        &windowPid
+    );
+
+    if (windowPid != data->pid)
+        return TRUE;
+
+    if (!IsWindowVisible(hwnd))
+        return TRUE;
+
+    data->hwnd = hwnd;
+
+    return FALSE;
+}
+
+BOOL CALLBACK Process::EnumWindowsForTitle(HWND hwnd, LPARAM lParam)
+{
+    auto* data = reinterpret_cast<FindPidsData*>(lParam);
+
+    if (!IsWindowVisible(hwnd))
+        return TRUE;
+
+    const int length = GetWindowTextLengthW(hwnd);
+
+    if (length <= 0)
+        return TRUE;
+
+    std::wstring windowTitle(length + 1, L'\0');
+
+    GetWindowTextW(
+        hwnd,
+        windowTitle.data(),
+        length + 1
+    );
+
+    windowTitle.resize(length);
+
+    if (windowTitle != data->title)
+        return TRUE;
+
+    DWORD pid = 0;
+
+    GetWindowThreadProcessId(
+        hwnd,
+        &pid
+    );
+
+    if (pid != 0)
+        data->pids.insert(pid);
+
+    return TRUE;
+}
+
+std::vector<DWORD> Process::GetPidsByTitle(const std::wstring& windowTitle)
+{
+    FindPidsData data;
+    data.title = windowTitle;
+
+    EnumWindows(
+        EnumWindowsForTitle,
+        reinterpret_cast<LPARAM>(&data)
+    );
+
+    return std::vector<DWORD>(
+        data.pids.begin(),
+        data.pids.end()
+    );
+}
+
+HWND Process::GetHwndByPid(DWORD pid)
+{
+    FindWindowData data{
+        .pid = pid,
+        .hwnd = nullptr
+    };
+
+    EnumWindows(
+        EnumWindowsForPid,
+        reinterpret_cast<LPARAM>(&data)
+    );
+
+    return data.hwnd;
+}
+
+bool Process::PostMessage(
+    HWND hwnd,
+    UINT message,
+    WPARAM wParam,
+    LPARAM lParam
+)
+{
+    if (!IsWindow(hwnd))
+        return false;
+
+    return ::PostMessageW(
+        hwnd,
+        message,
+        wParam,
+        lParam
+    ) != FALSE;
+}
